@@ -15,11 +15,10 @@ let uid = 0
 export function initMixin (Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
-    // a uid
     vm._uid = uid++
 
+    //性能测试开始， 调用 mark 方法，将 startTag 传递给它，从而在浏览器的性能分析工具中记录一个时间戳，以用于后续计算性能数据
     let startTag, endTag
-    /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       startTag = `vue-perf-start:${vm._uid}`
       endTag = `vue-perf-end:${vm._uid}`
@@ -30,9 +29,6 @@ export function initMixin (Vue: Class<Component>) {
     vm._isVue = true
     // merge options
     if (options && options._isComponent) {
-      // optimize internal component instantiation
-      // since dynamic options merging is pretty slow, and none of the
-      // internal component options needs special treatment.
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
@@ -45,26 +41,27 @@ export function initMixin (Vue: Class<Component>) {
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
-      vm._renderProxy = vm
+      vm._renderProxy = vm //主要用于在渲染过程中访问组件实例的属性和方法。
     }
-    // expose real self
-    vm._self = vm
+
+    vm._self = vm //主要用于在组件内部访问当前组件实例的上下文
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
-    callHook(vm, 'beforeCreate')
-    initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
-    callHook(vm, 'created')
+    callHook(vm, 'beforeCreate') //  在这里触发了beforeCreate的生命周期钩子
+    initInjections(vm) // 初始化依赖注入内容，在初始化data、props之前
+    initState(vm)    // 初始化props/data/method/watch/methods，在state文件中
+    initProvide(vm)
+    callHook(vm, 'created') //  在这里触发了created的生命周期钩子
 
-    /* istanbul ignore if */
+    // 性能测试技术，进行统计
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false)
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
+    // 将实例 #app挂载，$mount定义在src/platforms/web/entry-runtime-with-compiler.js
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }

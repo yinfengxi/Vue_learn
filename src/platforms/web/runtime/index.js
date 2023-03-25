@@ -33,14 +33,29 @@ extend(Vue.options.components, platformComponents)
 // install platform patch function
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
+
+
+
+
+
+
 // public mount method
 Vue.prototype.$mount = function (
   el?: string | Element,
-  hydrating?: boolean
+  hydrating?: boolean // 是用于服务端渲染时的优化参数
 ): Component {
-  el = el && inBrowser ? query(el) : undefined
+  el = el && inBrowser ? query(el) : undefined // isBrowser 判断是不是浏览器环境
+  // 调用mountComponent函数进行组件挂载，并返回挂载后的组件实例
   return mountComponent(this, el, hydrating)
 }
+
+
+
+
+
+
+
+
 
 // devtools global hook
 /* istanbul ignore next */

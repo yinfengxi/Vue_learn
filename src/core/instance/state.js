@@ -38,6 +38,7 @@ const sharedPropertyDefinition = {
 
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
+   // 使用了 this[sourceKey][key] 语法来获取被代理对象 vm._data 的对应属性值，其中 sourceKey 指向被代理对象的键名 _data。
     return this[sourceKey][key]
   }
   sharedPropertyDefinition.set = function proxySetter (val) {
@@ -52,7 +53,7 @@ export function initState (vm: Component) {
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
-    initData(vm)
+    initData(vm) // 主要看这里
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
@@ -131,6 +132,7 @@ function initData (vm: Component) {
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
+      // 验证属性名是否和方法名冲突
       if (methods && hasOwn(methods, key)) {
         warn(
           `Method "${key}" has already been defined as a data property.`,
@@ -138,17 +140,20 @@ function initData (vm: Component) {
         )
       }
     }
+
+      // 验证属性名是否和props冲突
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
-    } else if (!isReserved(key)) {
-      proxy(vm, `_data`, key)
+    } else if (!isReserved(key)) {  // 验证key值的合法性
+      proxy(vm, `_data`, key) // vm._data[key]代理到vm[key]，这样做的目的是为了让开发者可以像访问普通对象属性一样访问组件实例中的 data 属性
     }
   }
   // observe data
+  //对vm._data进行响应式处理，通过调用observe函数实现。这样做的目的是当vm._data的属性发生变化时，能够通知到Vue实例(vm)并触发视图更新。
   observe(data, true /* asRootData */)
 }
 
