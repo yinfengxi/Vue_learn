@@ -17,7 +17,7 @@ export default class Dep {
 
   constructor () {
     this.id = uid++
-    this.subs = []
+    this.subs = [] // 保存的watch实例数组，一个数据可能有多个
   }
 
   addSub (sub: Watcher) {
@@ -29,7 +29,9 @@ export default class Dep {
   }
 
   depend () {
+    // Dep.target代表将要添加的watch实例
     if (Dep.target) {
+      // watch实例上的addDep方法
       Dep.target.addDep(this)
     }
   }

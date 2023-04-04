@@ -43,6 +43,7 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // __ob__是一个对象被observe的标志
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       if (hasProto) {
@@ -107,11 +108,13 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
  */
+//
 export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   let ob: Observer | void
+  // __ob__判断value有没有被观测过
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -121,9 +124,11 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
-    ob = new Observer(value)
+    ob = new Observer(value) // Observer类接收对象或者数组
   }
   if (asRootData && ob) {
+    //vmCount是用来记录此Vue实例被使用的次数的，
+    //比如，我们有一个组件logo，页面头部和尾部都需要展示logo，都用了这个组件，那么这个时候vmCount就会计数，值为2
     ob.vmCount++
   }
   return ob

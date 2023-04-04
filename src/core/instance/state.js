@@ -140,7 +140,6 @@ function initData (vm: Component) {
         )
       }
     }
-
       // 验证属性名是否和props冲突
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(

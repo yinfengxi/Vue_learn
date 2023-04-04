@@ -38,7 +38,7 @@ export default class Watcher {
   deps: Array<Dep>;
   newDeps: Array<Dep>;
   depIds: SimpleSet;
-  newDepIds: SimpleSet;
+  newDepIds: SimpleSet; // 
   before: ?Function;
   getter: Function;
   value: any;
