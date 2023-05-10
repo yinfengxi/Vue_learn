@@ -156,6 +156,7 @@ function initData (vm: Component) {
   observe(data, true /* asRootData */)
 }
 
+// 如果data是函数形式，则返回里面的对象
 export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()

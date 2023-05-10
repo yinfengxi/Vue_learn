@@ -247,9 +247,6 @@ strats.computed = function (
   vm?: Component,
   key: string
 ): ?Object {
-  if (childVal && process.env.NODE_ENV !== 'production') {
-    assertObjectType(key, childVal, vm)
-  }
   if (!parentVal) return childVal
   const ret = Object.create(null)
   extend(ret, parentVal)
@@ -428,6 +425,7 @@ export function mergeOptions (
     }
   }
   function mergeField (key) {
+    // 对不同类型的数据进行合并，比如data, props
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
